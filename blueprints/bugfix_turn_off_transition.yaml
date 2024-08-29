@@ -1,0 +1,48 @@
+blueprint:
+  name: Bugfix Turn Off Transition
+  description: Turn off a light completely and do not stop at 1% intensity
+  domain: automation
+  source_url: null
+  author: Leon Ebert
+  input:
+    light_target:
+      name: Light
+      selector:
+        target:
+          entity:
+            domain: light
+    transition_time:
+      name: Transition duration
+      description: Duration of the Turn Off transition
+      default: 0
+      selector:
+        number:
+          min: 0
+          max: 3600
+          unit_of_measurement: seconds
+
+
+trigger:
+  - platform: state
+    entity_id: !input light_target
+    from: null
+    to: null
+condition: []
+action:
+  - if:
+      - condition: state
+        entity_id: !input light_target
+        state: 'off'
+    then:
+      - action: light.turn_off
+        target:
+          entity_id: !input light_target
+        data:
+          transition: !input transition_time
+    else:
+      - action: light.turn_on
+        target:
+          entity_id: !input light_target
+        data:
+          transition: !input transition_time
+mode: single
